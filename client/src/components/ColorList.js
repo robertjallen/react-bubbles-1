@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import axios from "axios";
 
+import api from '../utils/api'
 const initialColor = {
   color: "",
   code: { hex: "" }
@@ -10,6 +11,19 @@ const ColorList = ({ colors, updateColors }) => {
   console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
+
+  const [newColor, setNewColor] = useState(initialColor);
+
+
+  useEffect(()=>{
+    api()
+    .get('/api/colors')
+    .then(res => {
+      console.log(res.data)
+      updateColors(res.data)
+    })
+  },[editing])
+
 
   const editColor = color => {
     setEditing(true);
@@ -21,10 +35,45 @@ const ColorList = ({ colors, updateColors }) => {
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
+    api()
+    .put(`/api/colors/${colorToEdit.id}`, colorToEdit)
+    .then(res => {
+      console.log("saveEditResponse", res);
+      console.log(colors)
+      // updateColors([colorToEdit])
+    })
+
+    setEditing(false)
+    console.log("editing", editing)
   };
 
   const deleteColor = color => {
     // make a delete request to delete this color
+    if(window.confirm("DELETE")){
+      api()
+      .delete(`/api/colors/${color.id}`)
+      .then(res => {
+        console.log("deleteres", res)
+        const newList = colors.filter(clr => clr.id !== color.id)
+        console.log("newList", newList)
+        updateColors(newList)
+      })
+    }
+  };
+
+  const saveNew = e => {
+    newColor.id = Date.now();
+
+    e.preventDefault();
+    api()
+    .put(`/api/colors/${newColor.id}`, newColor)
+    .then(res => {
+      console.log("ADD_NEW_Response", res);
+
+      updateColors([...colors, newColor])
+    })
+
+    setEditing(false)
   };
 
   return (
