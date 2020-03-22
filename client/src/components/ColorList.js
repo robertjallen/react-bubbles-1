@@ -69,8 +69,7 @@ const ColorList = ({ colors, updateColors }) => {
     .post(`/api/colors/${newColor.id}`, newColor)
     .then(res => {
       console.log("ADD_NEW_Response", res);
-
-      updateColors([...colors, newColor])
+      updateColors(res.data)
     })
 
     setEditing(false)
