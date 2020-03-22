@@ -66,7 +66,7 @@ const ColorList = ({ colors, updateColors }) => {
 
     e.preventDefault();
     api()
-    .put(`/api/colors/${newColor.id}`, newColor)
+    .post(`/api/colors/${newColor.id}`, newColor)
     .then(res => {
       console.log("ADD_NEW_Response", res);
 
